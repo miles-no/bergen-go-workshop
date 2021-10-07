@@ -1,0 +1,8 @@
+version: '3'
+services:
+  url-shortener:
+    build:
+      context: .
+    image: url-shortener 
+    ports:
+      - "8080:8080"
