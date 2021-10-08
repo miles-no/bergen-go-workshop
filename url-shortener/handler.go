@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
+	"path"
 
 	"github.com/gorilla/mux"
 )
@@ -10,11 +11,22 @@ import (
 // Handler is a URL shortener which implements the http.Handler interface.
 type Handler struct {
 	router *mux.Router
+
+	s Shortener
+}
+
+type Shortener interface {
+	Put(url string) (id string)
+	Get(id string) (url string)
 }
 
 // NewHandler returns a new Handler which implements the URL shortener's REST API.
-func NewHandler() *Handler {
-	h := &Handler{router: mux.NewRouter()}
+func NewHandler(s Shortener) *Handler {
+	h := &Handler{
+		router: mux.NewRouter(),
+		// urls:   make(map[string]string),
+		s: s,
+	}
 	h.router.HandleFunc("/urls", h.HandleCreate).Methods("POST")
 	h.router.HandleFunc("/urls/{id}", h.HandleRedirect).Methods("GET")
 	return h
@@ -41,12 +53,27 @@ type URLResource struct {
 }
 
 func (h *Handler) HandleCreate(w http.ResponseWriter, req *http.Request) {
-	log.Print("Got create request")
-	http.Error(w, "TODO", http.StatusNotImplemented)
+	var v URLResource
+	if err := json.NewDecoder(req.Body).Decode(&v); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if v.ShortURL != "" {
+		http.Error(w, "you don't get to choose your short url", http.StatusBadRequest)
+		return
+	}
+	id := h.s.Put(v.URL)
+	v.ShortURL = path.Join(req.URL.Path, id)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(v)
 }
 
 func (h *Handler) HandleRedirect(w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	log.Printf("Got request for id %s", id)
-	http.Error(w, "TODO", http.StatusNotImplemented)
+	url := h.s.Get(id)
+	if url == "" {
+		http.NotFound(w, req)
+		return
+	}
+	http.Redirect(w, req, url, http.StatusFound)
 }
