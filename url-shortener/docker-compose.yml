@@ -6,3 +6,7 @@ services:
     image: url-shortener 
     ports:
       - "8080:8080"
+  redis:
+    image: redis
+    expose:
+      - "6379"

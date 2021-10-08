@@ -14,8 +14,10 @@ func main() {
 	if str := os.Getenv("HTTP_ADDR"); str != "" {
 		addr = str
 	}
+
 	// shortener := shortener.NewInMemory()
-	shortener, err := shortener.NewOnDisk("./data")
+	// shortener, err := shortener.NewOnDisk("./data")
+	shortener, err := shortener.NewRedis("redis:6379")
 	if err != nil {
 		log.Fatalf("Failed to init shortener: %s", err)
 	}
