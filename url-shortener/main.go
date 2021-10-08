@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/miles-no/bergen-go-workshop/url-shortener/shortener"
 )
 
 func main() {
@@ -12,9 +14,14 @@ func main() {
 	if str := os.Getenv("HTTP_ADDR"); str != "" {
 		addr = str
 	}
+	// shortener := shortener.NewInMemory()
+	shortener, err := shortener.NewOnDisk("./data")
+	if err != nil {
+		log.Fatalf("Failed to init shortener: %s", err)
+	}
 	srv := http.Server{
 		Addr:         addr,
-		Handler:      NewHandler(),
+		Handler:      NewHandler(shortener),
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
