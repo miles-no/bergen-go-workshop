@@ -15,7 +15,7 @@ Fagdag oktober 2021 - Go workshop
     - [Tutorial: Get started with Go](https://golang.org/doc/tutorial/getting-started)
     - [Tutorial: Create a Go module](https://golang.org/doc/tutorial/create-module.html)
 
-- 13:30 - 14:30 GET /demo/questions 
+- 13:30 - 14:30 Oppgave / Konkurranse
 - 14:30 - 16:00 Lage en URL shortener
 - 16:00 - 16:30 Gjennomgang av løsninger
 - 16:30 - 00:00 *[Let's Go Crazy](https://open.spotify.com/track/0QeI79sp1vS8L3JgpEO7mD?si=5dc1d12898a34310)* (Pizza og pils)
